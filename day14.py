@@ -32,8 +32,6 @@ while step != 0:
     step -= 1
     newData = dict()
     for (key, val) in data.items():
-        if val == 0:
-            continue
         if key in rules:
             out_1 = key[0] + rules[key]
             out_2 = rules[key] + key[1]
