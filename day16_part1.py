@@ -22,41 +22,34 @@ def parse(data, st, ed):
 
     if t == 4:
         i = st + 6
-        parse_data = []
         while True:
             if i + 5 > ed:
                 break
             tmp = data[i:i+5]
             i += 5
-            parse_data.append(tmp)
             if tmp[0] == '0':
                 break
-        packet.append((v, t, parse_data))
-        return i
+        return i, v
 
     i = int(data[st + 6], 2)
     if i == 0:
         length = int(data[st + 7:st + 22], 2)
-        packet.append((v, t))
 
+        now_version = v
         x = st + 22
         while x < st + 22 + length:
-            x = parse(data, x, st + 22 + length)
-        return st + 22 + length
+            x, _v = parse(data, x, st + 22 + length)
+            now_version += _v
+        return st + 22 + length, now_version
     else:
         num = int(data[st + 7:st + 18], 2)
         x = st + 18
+        now_version = v
 
-        packet.append((v, t))
         while num != 0:
-            x = parse(data, x, ed)
+            x, _v = parse(data, x, ed)
+            now_version += _v
             num -= 1       
-        return x
+        return x, now_version
 
-parse(bits, 0, len(bits))
-version = 0
-
-for each in packet:
-    version += each[0]
-print(version)
-print(packet)
+print(parse(bits, 0, len(bits))[1])
